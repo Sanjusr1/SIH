@@ -4,9 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Sikkim Monastery Tourism</title>
+
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
   <style>
     :root {
       --primary: #655fd6;
@@ -239,7 +244,7 @@
       color: #ccc;
     }
     /* QR Modal styles */
-    #qrModal, #calendarModal {
+    #qrModal, #calendarModal, #mapModal {
       display:none;
       position: fixed;
       top:0; left:0;
@@ -253,7 +258,7 @@
       padding: 20px;
       box-sizing: border-box;
     }
-    #qrModal > div, #calendarModal > div {
+    #qrModal > div, #calendarModal > div, #mapModal > div {
       background: #fff;
       border-radius: 20px;
       width: 90vw;
@@ -262,7 +267,7 @@
       position: relative;
       overflow: hidden;
     }
-    #qrModal.dark > div, #calendarModal.dark > div {
+    #qrModal.dark > div, #calendarModal.dark > div, #mapModal.dark > div {
       background: #181934;
       color: #ecebf7;
     }
@@ -275,7 +280,7 @@
       color: black;
       font-weight: bold;
     }
-    #closeQr, #closeCalendarBtn {
+    #closeQr, #closeCalendarBtn, #closeMapBtn {
       position: absolute;
       top: 8px;
       right: 10px;
@@ -287,6 +292,9 @@
       cursor: pointer;
       z-index: 15;
       font-weight: bold;
+    }
+    #map {
+      width: 100%; height: 100%;
     }
   </style>
 </head>
@@ -317,7 +325,7 @@
               <span class="feature-desc">Explore monastery locations & routes.</span>
             </div>
           </div>
-          <button class="feature-explore">Explore</button>
+          <button class="feature-explore" id="mapExploreBtn">Explore</button>
         </div>
         <div class="feature-row">
           <div class="feature-info">
@@ -415,6 +423,14 @@
     </div>
   </div>
 
+  <!-- Map Modal -->
+  <div id="mapModal">
+    <div>
+      <button id="closeMapBtn">Close</button>
+      <div id="map"></div>
+    </div>
+  </div>
+
   <script>
     const themeBtn = document.getElementById('themeToggle');
     const body = document.body;
@@ -458,13 +474,19 @@
         (decodedText, decodedResult) => {
           qrResult.textContent = `QR Code detected: ${decodedText}`;
           html5QrCode.stop();
+          try {
+            const url = new URL(decodedText);
+            window.open(url.href, '_blank');
+          } catch {
+            // not a URL
+          }
         },
-        errorMessage => {
-          // ignore scan errors
-        }
-      ).catch(err => {
-        qrResult.textContent = `Unable to start scanning: ${err}`;
-      });
+        (errorMessage) => {
+          // ignore errors
+        })
+        .catch((err) => {
+          qrResult.textContent = `Unable to start scanning: ${err}`;
+        });
     });
 
     closeQrBtn.addEventListener('click', () => {
@@ -486,6 +508,33 @@
 
     closeCalendarBtn.addEventListener('click', () => {
       calendarModal.style.display = 'none';
+    });
+
+    // Map modal setup
+    const mapModal = document.getElementById('mapModal');
+    const closeMapBtn = document.getElementById('closeMapBtn');
+    const mapExploreBtn = document.getElementById('mapExploreBtn');
+
+    mapExploreBtn.addEventListener('click', () => {
+      mapModal.style.display = 'flex';
+
+      if (!window.map) {
+        window.map = L.map('map').setView([27.5337, 88.5122], 10); // Sikkim center coords
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(window.map);
+
+        L.marker([27.3396, 88.6168]).addTo(window.map)
+          .bindPopup('Rumtek Monastery')
+          .openPopup();
+      } else {
+        window.map.invalidateSize();
+      }
+    });
+
+    closeMapBtn.addEventListener('click', () => {
+      mapModal.style.display = 'none';
     });
   </script>
 </body>
