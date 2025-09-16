@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trip Planner App with Camera</title>
+  <style>
+    :root {
+      --bg-color-light: #fff;
+      --text-color-light: #222;
+      --button-bg-light: #eaeaea;
+      --button-text-light: #222;
+      --bg-color-dark: #1a1a1a;
+      --text-color-dark: #f2f2f2;
+      --button-bg-dark: #333;
+      --button-text-dark: #fff;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+    }
+
+    header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px;
+      gap: 15px;
+    }
+
+    header button {
+      background-color: var(--button-bg-light);
+      color: var(--button-text-light);
+      border: none;
+      padding: 8px 12px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s, color 0.3s;
+      user-select: none;
+    }
+
+    body.dark header button {
+      background-color: var(--button-bg-dark);
+      color: var(--button-text-dark);
+    }
+
+    main {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn-large {
+      grid-column: span 2;
+    }
+
+    button.app-btn {
+      background-color: var(--button-bg-light);
+      color: var(--button-text-light);
+      border: none;
+      padding: 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s, color 0.3s;
+      user-select: none;
+    }
+
+    body.dark button.app-btn {
+      background-color: var(--button-bg-dark);
+      color: var(--button-text-dark);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    label.switch {
+      position: fixed;
+      top: 15px;
+      left: 20px;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    label.switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    label.switch span.slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    label.switch span.slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    label.switch input:checked + span.slider {
+      background-color: #2196f3;
+    }
+
+    label.switch input:checked + span.slider:before {
+      transform: translateX(26px);
+    }
+
+    /* Form styles */
+    .trip-planning label {
+      display: block;
+      margin: 12px 0 4px;
+      font-weight: bold;
+    }
+
+    .trip-planning input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      background: var(--bg-color-light);
+      color: var(--text-color-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark .trip-planning input[type="text"] {
+      background: var(--bg-color-dark);
+      color: var(--text-color-dark);
+      border: 1px solid #555;
+    }
+
+    .trip-planning .trip-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    /* Camera modal styles */
+    #cameraModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      display: none;
+    }
+
+    #cameraContent {
+      background: var(--bg-color-light);
+      color: var(--text-color-light);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    body.dark #cameraContent {
+      background: var(--bg-color-dark);
+      color: var(--text-color-dark);
+    }
+
+    #cameraVideo {
+      max-width: 100%;
+      border-radius: 8px;
+      background: black;
+    }
+
+    #capturedImage {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    #cameraButtons {
+      margin-top: 15px;
+    }
+
+    #cameraButtons button {
+      margin: 0 10px;
+      padding: 8px 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #cameraButtons button.save-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    #cameraButtons button.close-btn {
+      background-color: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <label class="switch" title="Toggle light/dark mode">
+    <input type="checkbox" id="themeToggle" />
+    <span class="slider"></span>
+  </label>
+
+  <header>
+    <button id="btnCamera" title="Camera">📷</button>
+    <button id="btnSearch" title="Search">🔍</button>
+    <button id="btnProfile" title="Profile">👤</button>
+  </header>
+
+  <main>
+    <!-- Page 1 -->
+    <section id="pageHome">
+      <h1>Home Page</h1>
+      <div class="btn-grid">
+        <button class="app-btn">Profile/Trip</button>
+        <button class="app-btn">Extract</button>
+        <button class="app-btn">Map</button>
+        <button class="app-btn btn-large">Gallery</button>
+        <button class="app-btn">Transactions</button>
+      </div>
+      <button class="app-btn" style="margin-top: 20px;" id="goToTripPlanning">Go to Trip Planning ➔</button>
+    </section>
+
+    <!-- Page 2 -->
+    <section id="pageTripPlanning" class="hidden trip-planning">
+      <h1>Trip Planning</h1>
+      <label for="fromLocation">From:</label>
+      <input type="text" id="fromLocation" placeholder="Enter start location" />
+      <label for="toLocation">To:</label>
+      <input type="text" id="toLocation" placeholder="Enter destination" />
+      <div class="trip-buttons">
+        <button class="app-btn">On the way</button>
+        <button class="app-btn">Nearest</button>
+        <button class="app-btn">Transport</button>
+        <!-- Extra placeholders if needed -->
+        <div></div>
+      </div>
+      <button class="app-btn" style="margin-top: 20px;" id="goToHome">← Back to Home</button>
+    </section>
+  </main>
+
+  <!-- Camera modal -->
+  <div id="cameraModal">
+    <div id="cameraContent">
+      <video id="cameraVideo" autoplay playsinline></video>
+      <img id="capturedImage" alt="Captured" />
+      <div id="cameraButtons">
+        <button id="captureBtn">Capture</button>
+        <button id="saveBtn" class="save-btn" style="display:none;">Save</button>
+        <button id="closeBtn" class="close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+
+    // Load saved theme from localStorage or default light
+    if (localStorage.getItem('darkMode') === 'true') {
+      body.classList.add('dark');
+      themeToggle.checked = true;
+    }
+
+    themeToggle.addEventListener('change', () => {
+      if(themeToggle.checked) {
+        body.classList.add('dark');
+        localStorage.setItem('darkMode', 'true');
+      } else {
+        body.classList.remove('dark');
+        localStorage.setItem('darkMode', 'false');
+      }
+    });
+
+    // Page navigation
+    const pageHome = document.getElementById('pageHome');
+    const pageTripPlanning = document.getElementById('pageTripPlanning');
+    const goToTripPlanningBtn = document.getElementById('goToTripPlanning');
+    const goToHomeBtn = document.getElementById('goToHome');
+
+    goToTripPlanningBtn.addEventListener('click', () => {
+      pageHome.classList.add('hidden');
+      pageTripPlanning.classList.remove('hidden');
+    });
+
+    goToHomeBtn.addEventListener('click', () => {
+      pageTripPlanning.classList.add('hidden');
+      pageHome.classList.remove('hidden');
+    });
+
+    // Camera functionality
+    const btnCamera = document.getElementById('btnCamera');
+    const cameraModal = document.getElementById('cameraModal');
+    const video = document.getElementById('cameraVideo');
+    const capturedImage = document.getElementById('capturedImage');
+    const captureBtn = document.getElementById('captureBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    let stream;
+
+    btnCamera.addEventListener('click', async () => {
+      cameraModal.style.display = 'flex';
+      capturedImage.style.display = 'none';
+      captureBtn.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (err) {
+        alert('Error accessing camera: ' + err.message);
+        cameraModal.style.display = 'none';
+      }
+    });
+
+    captureBtn.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageUrl = canvas.toDataURL('image/png');
+      capturedImage.src = imageUrl;
+      capturedImage.style.display = 'block';
+      captureBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+
+      // Stop the video stream while showing the captured image
+      stream.getTracks().forEach(track => track.stop());
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = capturedImage.src;
+      a.download = 'captured_image.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    closeBtn.addEventListener('click', () => {
+      cameraModal.style.display = 'none';
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    });
+  </script>
+</body>
+</html>
