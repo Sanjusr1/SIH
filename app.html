@@ -2,384 +2,490 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trip Planner App with Camera</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Sikkim Monastery Tourism</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
-      --bg-color-light: #fff;
-      --text-color-light: #222;
-      --button-bg-light: #eaeaea;
-      --button-text-light: #222;
-      --bg-color-dark: #1a1a1a;
-      --text-color-dark: #f2f2f2;
-      --button-bg-dark: #333;
-      --button-text-dark: #fff;
+      --primary: #655fd6;
+      --accent: #8f8ff4;
+      --card-dark: #181934;
+      --card-light: #fff;
+      --toggle-dark: #5045a6;
+      --toggle-light: #756bfa;
+      --border-radius: 22px;
+      --shadow-main: 0 2px 18px rgba(86,70,193,0.08);
+      --text-dark: #181934;
+      --text-light: #ffffff;
+      --button-light: #eceafd;
+      --button-dark: #2b2846;
     }
-
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-color-light);
-      color: var(--text-color-light);
-      transition: background-color 0.3s, color 0.3s;
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--card-light);
+      color: var(--text-dark);
+      transition: background 0.25s, color 0.25s;
     }
-
     body.dark {
-      background-color: var(--bg-color-dark);
-      color: var(--text-color-dark);
+      background: var(--card-dark) !important;
+      color: var(--text-light) !important;
     }
-
-    header {
-      display: flex;
-      justify-content: flex-end;
-      padding: 10px 20px;
-      gap: 15px;
-    }
-
-    header button {
-      background-color: var(--button-bg-light);
-      color: var(--button-text-light);
-      border: none;
-      padding: 8px 12px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: background-color 0.3s, color 0.3s;
-      user-select: none;
-    }
-
-    body.dark header button {
-      background-color: var(--button-bg-dark);
-      color: var(--button-text-dark);
-    }
-
-    main {
-      padding: 20px;
-      max-width: 600px;
+    .container {
+      max-width: 470px;
       margin: 0 auto;
+      padding: 24px 7px 32px 7px;
+      box-sizing: border-box;
     }
-
-    .btn-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 30px;
+    /* Top header bar */
+    .topbar-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-light);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-main);
+      padding: 15px 22px 12px 20px;
+      margin-bottom: 18px;
     }
-
-    .btn-large {
-      grid-column: span 2;
+    body.dark .topbar-card {
+      background: var(--card-dark);
+      color: var(--text-light);
     }
-
-    button.app-btn {
-      background-color: var(--button-bg-light);
-      color: var(--button-text-light);
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.2;
+      color: var(--text-dark);
+    }
+    body.dark .topbar-logo {
+      color: var(--text-light);
+    }
+    /* Mode switch */
+    .mode-switch-btn {
+      background: var(--toggle-light);
+      color: #fff;
       border: none;
-      padding: 20px;
-      font-size: 18px;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 1px 6px rgba(101,95,214,0.13);
+      padding: 8px 17px;
+      font-weight: 600;
       cursor: pointer;
-      border-radius: 6px;
-      transition: background-color 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+      transition: background 0.3s;
+    }
+    body.dark .mode-switch-btn {
+      background: var(--toggle-dark);
+    }
+    .mode-switch-btn:hover {
+      background: var(--accent);
+    }
+    /* cards */
+    .card, .features-card {
+      background: var(--card-light);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-main);
+      transition: background 0.25s, color 0.25s;
+      margin-bottom: 20px;
+    }
+    body.dark .card, body.dark .features-card {
+      background: var(--card-dark);
+      color: var(--text-light);
+    }
+    .card {
+      padding: 24px 16px;
+    }
+    .features-card {
+      padding: 18px 7px 10px 7px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .card h2, .features-card h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+      display: flex; align-items: center; gap:8px;
+    }
+    body.dark .card h2, body.dark .features-card h2 {
+      color: var(--accent);
+    }
+    /* Digital archives grid */
+    .archive-btns {
+      display: flex; flex-wrap: wrap; gap: 11px;
+      justify-content: space-between;
+    }
+    .archive-btns button {
+      flex: 1 0 45%;
+      padding: 14px 10px;
+      font-size: 1rem;
+      border-radius: 14px; background: var(--button-light);
+      border:none; cursor:pointer; font-weight:500;
+      color: var(--text-dark);
+      box-shadow: 0 1px 6px rgba(135,130,180,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    body.dark .archive-btns button {
+      background: var(--button-dark);
+      color: var(--text-light);
+    }
+    /* stats grid */
+    .stats-grid {
+      display: flex; flex-wrap: wrap;
+      gap: 13px; justify-content: space-between;
+    }
+    .stat {
+      flex: 1 0 44%;
+      background: var(--button-light);
+      border-radius: 14px; text-align: center; padding: 15px 6px;
+      font-size: 1.05rem; color: var(--text-dark);
+      box-shadow: 0 1px 5px rgba(135,130,180,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    .stat big {
+      font-size: 1.25rem; font-weight: 700; color: var(--primary); display:block; margin-bottom:5px;
+      transition: color 0.2s;
+    }
+    body.dark .stat {
+      background: var(--button-dark);
+      color: var(--text-light);
+    }
+    body.dark .stat big {
+      color: var(--accent);
+    }
+    /* Features List */
+    .features-card h2 {
+      font-size: 1.13rem;
+      margin-bottom: 11px;
       user-select: none;
     }
-
-    body.dark button.app-btn {
-      background-color: var(--button-bg-dark);
-      color: var(--button-text-dark);
+    .feature-list {
+      display: flex; flex-direction: column; gap:15px;
     }
-
-    .hidden {
-      display: none;
+    .feature-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 15px;
+      border-radius: 16px;
+      background: var(--button-light);
+      box-shadow: 0 2px 10px rgba(101,95,214,0.09);
+      margin-bottom: 0;
+      transition: background 0.2s;
+      user-select: none;
     }
-
-    label.switch {
-      position: fixed;
-      top: 15px;
-      left: 20px;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
+    body.dark .feature-row {
+      background: var(--button-dark);
     }
-
-    label.switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
+    .feature-info {
+      display: flex; align-items: center; gap:12px;
     }
-
-    label.switch span.slider {
-      position: absolute;
+    .feature-icon {
+      font-size: 1.8rem;
+      background: transparent;
+      border-radius: 7px;
+      width:36px; height:36px; line-height:36px;
+      text-align:center;
+      color: var(--primary);
+    }
+    body.dark .feature-icon {
+      color: var(--accent);
+    }
+    .feature-details {
+      display: flex; flex-direction: column;
+    }
+    .feature-title {
+      font-weight: 700;
+      font-size: 1.07rem;
+    }
+    .feature-desc {
+      font-size: 0.97rem;
+      color: inherit;
+    }
+    .feature-explore {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 9px 24px;
+      font-weight: 600;
+      font-size: 1.02rem;
+      border-radius: 12px;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
+      box-shadow: 0 1px 6px rgba(101,95,214,0.13);
+      transition: background 0.2s;
     }
-
-    label.switch span.slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
+    .feature-explore:hover {
+      background: var(--accent);
     }
-
-    label.switch input:checked + span.slider {
-      background-color: #2196f3;
+    /* Responsive */
+    @media (max-width: 520px) {
+      .container {max-width:100vw;}
+      .features-card, .card, .topbar-card {padding-left:3vw; padding-right:3vw;}
     }
-
-    label.switch input:checked + span.slider:before {
-      transform: translateX(26px);
+    footer {
+      text-align:center; font-size:0.95rem;
+      color:#898ad1; margin:23px 0 10px;
+      user-select: none;
+      transition: color 0.2s;
     }
-
-    /* Form styles */
-    .trip-planning label {
-      display: block;
-      margin: 12px 0 4px;
-      font-weight: bold;
+    body.dark footer {
+      color: #ccc;
     }
-
-    .trip-planning input[type="text"] {
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 16px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      margin-bottom: 20px;
-      background: var(--bg-color-light);
-      color: var(--text-color-light);
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    body.dark .trip-planning input[type="text"] {
-      background: var(--bg-color-dark);
-      color: var(--text-color-dark);
-      border: 1px solid #555;
-    }
-
-    .trip-planning .trip-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    /* Camera modal styles */
-    #cameraModal {
+    /* QR Modal styles */
+    #qrModal, #calendarModal {
+      display:none;
       position: fixed;
-      top: 0;
-      left: 0;
+      top:0; left:0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.75);
-      display: flex;
-      justify-content: center;
+      background: rgba(0,0,0,0.8);
+      z-index: 1100;
       align-items: center;
-      z-index: 10;
-      display: none;
-    }
-
-    #cameraContent {
-      background: var(--bg-color-light);
-      color: var(--text-color-light);
+      justify-content: center;
+      flex-direction: column;
       padding: 20px;
-      border-radius: 8px;
-      text-align: center;
+      box-sizing: border-box;
     }
-
-    body.dark #cameraContent {
-      background: var(--bg-color-dark);
-      color: var(--text-color-dark);
+    #qrModal > div, #calendarModal > div {
+      background: #fff;
+      border-radius: 20px;
+      width: 90vw;
+      max-width: 400px;
+      height: 80vh;
+      position: relative;
+      overflow: hidden;
     }
-
-    #cameraVideo {
-      max-width: 100%;
-      border-radius: 8px;
-      background: black;
+    #qrModal.dark > div, #calendarModal.dark > div {
+      background: #181934;
+      color: #ecebf7;
     }
-
-    #capturedImage {
-      max-width: 100%;
+    #qr-reader {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    #qr-result {
       margin-top: 10px;
-      border-radius: 8px;
+      color: black;
+      font-weight: bold;
     }
-
-    #cameraButtons {
-      margin-top: 15px;
-    }
-
-    #cameraButtons button {
-      margin: 0 10px;
-      padding: 8px 14px;
-      font-size: 16px;
-      border-radius: 6px;
+    #closeQr, #closeCalendarBtn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: #f44336;
+      color: #fff;
       border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
       cursor: pointer;
-    }
-
-    #cameraButtons button.save-btn {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    #cameraButtons button.close-btn {
-      background-color: #f44336;
-      color: white;
+      z-index: 15;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <label class="switch" title="Toggle light/dark mode">
-    <input type="checkbox" id="themeToggle" />
-    <span class="slider"></span>
-  </label>
-
-  <header>
-    <button id="btnCamera" title="Camera">📷</button>
-    <button id="btnSearch" title="Search">🔍</button>
-    <button id="btnProfile" title="Profile">👤</button>
-  </header>
-
-  <main>
-    <!-- Page 1 -->
-    <section id="pageHome">
-      <h1>Home Page</h1>
-      <div class="btn-grid">
-        <button class="app-btn">Profile/Trip</button>
-        <button class="app-btn">Extract</button>
-        <button class="app-btn">Map</button>
-        <button class="app-btn btn-large">Gallery</button>
-        <button class="app-btn">Transactions</button>
+  <div class="container">
+    <!-- ---- Top header ---- -->
+    <div class="topbar-card">
+      <div class="topbar-logo" aria-label="Sikkim Monastery Tourism logo">
+        <span class="logo-icon" style="font-size:1.7rem;vertical-align:middle;">⛩️</span>
+        <span class="logo-text" style="font-weight:700;font-size:1.1rem;vertical-align:middle;line-height:1.2;">
+          Sikkim Monastery<br />Tourism
+        </span>
       </div>
-      <button class="app-btn" style="margin-top: 20px;" id="goToTripPlanning">Go to Trip Planning ➔</button>
+      <button id="themeToggle" class="mode-switch-btn" aria-label="Toggle light and dark mode">
+        <span style="font-size:1.15rem;vertical-align:middle;">🌙</span>
+        <span class="switch-text" style="font-weight:500;">Dark<br />Mode</span>
+      </button>
+    </div>
+    <!-- ---- Features ---- -->
+    <section class="features-card">
+      <h2><span style="color:#ff4171;">&#x1F6A9;</span> Explore Monastery Features</h2>
+      <div class="feature-list">
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-map"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Interactive Map</span>
+              <span class="feature-desc">Explore monastery locations & routes.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-calendar-alt"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Cultural Calendar</span>
+              <span class="feature-desc">Festivals & rituals schedule.</span>
+            </div>
+          </div>
+          <button class="feature-explore" id="calendarExploreBtn">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-qrcode"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">QR Guide</span>
+              <span class="feature-desc">Scan to learn monastery components.</span>
+            </div>
+          </div>
+          <button class="feature-explore" id="qrExploreBtn">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-cubes"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">3D Models</span>
+              <span class="feature-desc">View monastery architecture in 3D.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-headphones"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Smart Audio Guide</span>
+              <span class="feature-desc">Location-based narration.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-globe"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Virtual Tours</span>
+              <span class="feature-desc">360° panoramic monastery views.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+      </div>
     </section>
-
-    <!-- Page 2 -->
-    <section id="pageTripPlanning" class="hidden trip-planning">
-      <h1>Trip Planning</h1>
-      <label for="fromLocation">From:</label>
-      <input type="text" id="fromLocation" placeholder="Enter start location" />
-      <label for="toLocation">To:</label>
-      <input type="text" id="toLocation" placeholder="Enter destination" />
-      <div class="trip-buttons">
-        <button class="app-btn">On the way</button>
-        <button class="app-btn">Nearest</button>
-        <button class="app-btn">Transport</button>
-        <!-- Extra placeholders if needed -->
-        <div></div>
+    <!-- ---- Digital Archives ---- -->
+    <section class="card">
+      <h2>📜 Digital Archives</h2>
+      <div class="archive-btns">
+        <button>Ancient Manuscripts</button>
+        <button>Murals & Art</button>
+        <button>Historic Documents</button>
+        <button>Prayer Collections</button>
+        <button>Ritual Ceremonies</button>
+        <button>Traditional Music</button>
       </div>
-      <button class="app-btn" style="margin-top: 20px;" id="goToHome">← Back to Home</button>
     </section>
-  </main>
-
-  <!-- Camera modal -->
-  <div id="cameraModal">
-    <div id="cameraContent">
-      <video id="cameraVideo" autoplay playsinline></video>
-      <img id="capturedImage" alt="Captured" />
-      <div id="cameraButtons">
-        <button id="captureBtn">Capture</button>
-        <button id="saveBtn" class="save-btn" style="display:none;">Save</button>
-        <button id="closeBtn" class="close-btn">Close</button>
+    <!-- ---- Tourism Statistics ---- -->
+    <section class="card">
+      <h2>📊 Tourism Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat"><big>200+</big>Active Monasteries</div>
+        <div class="stat"><big>50K+</big>Annual Visitors</div>
+        <div class="stat"><big>120+</big>Cultural Events</div>
+        <div class="stat"><big>15</big>Heritage Sites</div>
       </div>
+    </section>
+    <footer>
+      © 2025 Sikkim Monastery Tourism · Enhanced UI Prototype
+    </footer>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div id="qrModal">
+    <div>
+      <button id="closeQr">Close Scanner</button>
+      <div id="qr-reader"></div>
+      <div id="qr-result"></div>
+    </div>
+  </div>
+
+  <!-- Calendar Modal -->
+  <div id="calendarModal">
+    <div>
+      <button id="closeCalendarBtn">Close</button>
+      <iframe src="https://www.lotsawahouse.org/Cgi/phugpa.pl" style="width:100%; height:100%; border:none; border-radius: 20px;"></iframe>
     </div>
   </div>
 
   <script>
+    const themeBtn = document.getElementById('themeToggle');
     const body = document.body;
-    const themeToggle = document.getElementById('themeToggle');
-
-    // Load saved theme from localStorage or default light
-    if (localStorage.getItem('darkMode') === 'true') {
+    if(localStorage.getItem('darkMode') === 'true') {
       body.classList.add('dark');
-      themeToggle.checked = true;
+      themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500;">Light<br />Mode</span>';
     }
-
-    themeToggle.addEventListener('change', () => {
-      if(themeToggle.checked) {
-        body.classList.add('dark');
-        localStorage.setItem('darkMode', 'true');
-      } else {
+    themeBtn.addEventListener('click', () => {
+      if(body.classList.contains('dark')) {
         body.classList.remove('dark');
         localStorage.setItem('darkMode', 'false');
+        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">🌙</span><span class="switch-text" style="font-weight:500;">Dark<br />Mode</span>';
+      } else {
+        body.classList.add('dark');
+        localStorage.setItem('darkMode', 'true');
+        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500;">Light<br />Mode</span>';
       }
     });
 
-    // Page navigation
-    const pageHome = document.getElementById('pageHome');
-    const pageTripPlanning = document.getElementById('pageTripPlanning');
-    const goToTripPlanningBtn = document.getElementById('goToTripPlanning');
-    const goToHomeBtn = document.getElementById('goToHome');
+    // QR scanner setup
+    const qrModal = document.getElementById('qrModal');
+    const qrResult = document.getElementById('qr-result');
+    const closeQrBtn = document.getElementById('closeQr');
+    let html5QrCode;
 
-    goToTripPlanningBtn.addEventListener('click', () => {
-      pageHome.classList.add('hidden');
-      pageTripPlanning.classList.remove('hidden');
+    document.getElementById('qrExploreBtn').addEventListener('click', () => {
+      qrModal.style.display = 'flex';
+      qrResult.innerText = "Scanning for QR code...";
+
+      if (html5QrCode) {
+        html5QrCode.clear().catch(e => console.error(e));
+      }
+
+      html5QrCode = new Html5Qrcode("qr-reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: 250
+        },
+        (decodedText, decodedResult) => {
+          qrResult.textContent = `QR Code detected: ${decodedText}`;
+          html5QrCode.stop();
+        },
+        errorMessage => {
+          // ignore scan errors
+        }
+      ).catch(err => {
+        qrResult.textContent = `Unable to start scanning: ${err}`;
+      });
     });
 
-    goToHomeBtn.addEventListener('click', () => {
-      pageTripPlanning.classList.add('hidden');
-      pageHome.classList.remove('hidden');
-    });
-
-    // Camera functionality
-    const btnCamera = document.getElementById('btnCamera');
-    const cameraModal = document.getElementById('cameraModal');
-    const video = document.getElementById('cameraVideo');
-    const capturedImage = document.getElementById('capturedImage');
-    const captureBtn = document.getElementById('captureBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const closeBtn = document.getElementById('closeBtn');
-
-    let stream;
-
-    btnCamera.addEventListener('click', async () => {
-      cameraModal.style.display = 'flex';
-      capturedImage.style.display = 'none';
-      captureBtn.style.display = 'inline-block';
-      saveBtn.style.display = 'none';
-
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-      } catch (err) {
-        alert('Error accessing camera: ' + err.message);
-        cameraModal.style.display = 'none';
+    closeQrBtn.addEventListener('click', () => {
+      qrModal.style.display = 'none';
+      qrResult.textContent = '';
+      if (html5QrCode) {
+        html5QrCode.stop();
       }
     });
 
-    captureBtn.addEventListener('click', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageUrl = canvas.toDataURL('image/png');
-      capturedImage.src = imageUrl;
-      capturedImage.style.display = 'block';
-      captureBtn.style.display = 'none';
-      saveBtn.style.display = 'inline-block';
+    // Calendar modal setup
+    const calendarModal = document.getElementById('calendarModal');
+    const closeCalendarBtn = document.getElementById('closeCalendarBtn');
+    const calendarExploreBtn = document.getElementById('calendarExploreBtn');
 
-      // Stop the video stream while showing the captured image
-      stream.getTracks().forEach(track => track.stop());
+    calendarExploreBtn.addEventListener('click', () => {
+      calendarModal.style.display = 'flex';
     });
 
-    saveBtn.addEventListener('click', () => {
-      const a = document.createElement('a');
-      a.href = capturedImage.src;
-      a.download = 'captured_image.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    });
-
-    closeBtn.addEventListener('click', () => {
-      cameraModal.style.display = 'none';
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
+    closeCalendarBtn.addEventListener('click', () => {
+      calendarModal.style.display = 'none';
     });
   </script>
 </body>
