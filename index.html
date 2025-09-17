@@ -4,13 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Sikkim Monastery Tourism</title>
-
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-  
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 
   <style>
     :root {
@@ -405,7 +401,6 @@
       © 2025 Sikkim Monastery Tourism · Enhanced UI Prototype
     </footer>
   </div>
-
   <!-- QR Scanner Modal -->
   <div id="qrModal">
     <div>
@@ -414,7 +409,6 @@
       <div id="qr-result"></div>
     </div>
   </div>
-
   <!-- Calendar Modal -->
   <div id="calendarModal">
     <div>
@@ -422,16 +416,19 @@
       <iframe src="https://www.lotsawahouse.org/Cgi/phugpa.pl" style="width:100%; height:100%; border:none; border-radius: 20px;"></iframe>
     </div>
   </div>
-
   <!-- Map Modal -->
   <div id="mapModal">
     <div>
       <button id="closeMapBtn">Close</button>
-      <div id="map"></div>
+      <div id="map" style="width:100%; height:100%;"></div>
     </div>
   </div>
 
+  <!-- Google Maps API script with your key -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjgybqWqcg8vhilVmRc846aXkgTXyLY8A" async defer></script>
+
   <script>
+    // Theme toggle
     const themeBtn = document.getElementById('themeToggle');
     const body = document.body;
     if(localStorage.getItem('darkMode') === 'true') {
@@ -455,15 +452,12 @@
     const qrResult = document.getElementById('qr-result');
     const closeQrBtn = document.getElementById('closeQr');
     let html5QrCode;
-
     document.getElementById('qrExploreBtn').addEventListener('click', () => {
       qrModal.style.display = 'flex';
       qrResult.innerText = "Scanning for QR code...";
-
       if (html5QrCode) {
         html5QrCode.clear().catch(e => console.error(e));
       }
-
       html5QrCode = new Html5Qrcode("qr-reader");
       html5QrCode.start(
         { facingMode: "environment" },
@@ -488,7 +482,6 @@
           qrResult.textContent = `Unable to start scanning: ${err}`;
         });
     });
-
     closeQrBtn.addEventListener('click', () => {
       qrModal.style.display = 'none';
       qrResult.textContent = '';
@@ -501,35 +494,31 @@
     const calendarModal = document.getElementById('calendarModal');
     const closeCalendarBtn = document.getElementById('closeCalendarBtn');
     const calendarExploreBtn = document.getElementById('calendarExploreBtn');
-
     calendarExploreBtn.addEventListener('click', () => {
       calendarModal.style.display = 'flex';
     });
-
     closeCalendarBtn.addEventListener('click', () => {
       calendarModal.style.display = 'none';
     });
 
-    // Map modal setup
+    // Google Maps setup
+    let map;
     const mapModal = document.getElementById('mapModal');
     const closeMapBtn = document.getElementById('closeMapBtn');
     const mapExploreBtn = document.getElementById('mapExploreBtn');
-
     mapExploreBtn.addEventListener('click', () => {
       mapModal.style.display = 'flex';
-
-      if (!window.map) {
-        window.map = L.map('map').setView([27.5337, 88.5122], 10); // Sikkim center coords
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(window.map);
-
-        L.marker([27.3396, 88.6168]).addTo(window.map)
-          .bindPopup('Rumtek Monastery')
-          .openPopup();
-      } else {
-        window.map.invalidateSize();
+      if (!map) {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 27.5337, lng: 88.5122 },
+          zoom: 10,
+        });
+        // Marker for Rumtek Monastery
+        new google.maps.Marker({
+          position: { lat: 27.3396, lng: 88.6168 },
+          map: map,
+          title: 'Rumtek Monastery'
+        });
       }
     });
 
