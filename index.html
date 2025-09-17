@@ -269,7 +269,7 @@
     }
     #qr-reader {
       width: 100% !important;
-      height: 100% !important;
+      height: 320px !important; /* Added fixed height */
     }
     #qr-result {
       margin-top: 10px;
@@ -476,7 +476,7 @@
           }
         },
         (errorMessage) => {
-          // ignore errors
+          // No action needed on scan failure to allow continuous scanning
         })
         .catch((err) => {
           qrResult.textContent = `Unable to start scanning: ${err}`;
