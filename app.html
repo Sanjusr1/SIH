@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Sikkim Monastery Tourism</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <style>
+    :root {
+      --primary: #655fd6;
+      --accent: #8f8ff4;
+      --card-dark: #181934;
+      --card-light: #fff;
+      --toggle-dark: #5045a6;
+      --toggle-light: #756bfa;
+      --border-radius: 22px;
+      --shadow-main: 0 2px 18px rgba(86,70,193,0.08);
+      --text-dark: #181934;
+      --text-light: #ffffff;
+      --button-light: #eceafd;
+      --button-dark: #2b2846;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--card-light);
+      color: var(--text-dark);
+      transition: background 0.25s, color 0.25s;
+    }
+    body.dark {
+      background: var(--card-dark) !important;
+      color: var(--text-light) !important;
+    }
+    .container {
+      max-width: 470px;
+      margin: 0 auto;
+      padding: 24px 7px 32px 7px;
+      box-sizing: border-box;
+    }
+    /* Top header bar */
+    .topbar-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-light);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-main);
+      padding: 15px 22px 12px 20px;
+      margin-bottom: 18px;
+    }
+    body.dark .topbar-card {
+      background: var(--card-dark);
+      color: var(--text-light);
+    }
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.2;
+      color: var(--text-dark);
+    }
+    body.dark .topbar-logo {
+      color: var(--text-light);
+    }
+    /* Mode switch */
+    .mode-switch-btn {
+      background: var(--toggle-light);
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 1px 6px rgba(101,95,214,0.13);
+      padding: 8px 17px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+      transition: background 0.3s;
+    }
+    body.dark .mode-switch-btn {
+      background: var(--toggle-dark);
+    }
+    .mode-switch-btn:hover {
+      background: var(--accent);
+    }
+    /* cards */
+    .card, .features-card {
+      background: var(--card-light);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-main);
+      transition: background 0.25s, color 0.25s;
+      margin-bottom: 20px;
+    }
+    body.dark .card, body.dark .features-card {
+      background: var(--card-dark);
+      color: var(--text-light);
+    }
+    .card {
+      padding: 24px 16px;
+    }
+    .features-card {
+      padding: 18px 7px 10px 7px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .card h2, .features-card h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+      display: flex; align-items: center; gap:8px;
+    }
+    body.dark .card h2, body.dark .features-card h2 {
+      color: var(--accent);
+    }
+    /* Digital archives grid */
+    .archive-btns {
+      display: flex; flex-wrap: wrap; gap: 11px;
+      justify-content: space-between;
+    }
+    .archive-btns button {
+      flex: 1 0 45%;
+      padding: 14px 10px;
+      font-size: 1rem;
+      border-radius: 14px; background: var(--button-light);
+      border:none; cursor:pointer; font-weight:500;
+      color: var(--text-dark);
+      box-shadow: 0 1px 6px rgba(135,130,180,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    body.dark .archive-btns button {
+      background: var(--button-dark);
+      color: var(--text-light);
+    }
+    /* stats grid */
+    .stats-grid {
+      display: flex; flex-wrap: wrap;
+      gap: 13px; justify-content: space-between;
+    }
+    .stat {
+      flex: 1 0 44%;
+      background: var(--button-light);
+      border-radius: 14px; text-align: center; padding: 15px 6px;
+      font-size: 1.05rem; color: var(--text-dark);
+      box-shadow: 0 1px 5px rgba(135,130,180,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    .stat big {
+      font-size: 1.25rem; font-weight: 700; color: var(--primary); display:block; margin-bottom:5px;
+      transition: color 0.2s;
+    }
+    body.dark .stat {
+      background: var(--button-dark);
+      color: var(--text-light);
+    }
+    body.dark .stat big {
+      color: var(--accent);
+    }
+    /* Features List */
+    .features-card h2 {
+      font-size: 1.13rem;
+      margin-bottom: 11px;
+      user-select: none;
+    }
+    .feature-list {
+      display: flex; flex-direction: column; gap:15px;
+    }
+    .feature-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 15px;
+      border-radius: 16px;
+      background: var(--button-light);
+      box-shadow: 0 2px 10px rgba(101,95,214,0.09);
+      margin-bottom: 0;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    body.dark .feature-row {
+      background: var(--button-dark);
+    }
+    .feature-info {
+      display: flex; align-items: center; gap:12px;
+    }
+    .feature-icon {
+      font-size: 1.8rem;
+      background: transparent;
+      border-radius: 7px;
+      width:36px; height:36px; line-height:36px;
+      text-align:center;
+      color: var(--primary);
+    }
+    body.dark .feature-icon {
+      color: var(--accent);
+    }
+    .feature-details {
+      display: flex; flex-direction: column;
+    }
+    .feature-title {
+      font-weight: 700;
+      font-size: 1.07rem;
+    }
+    .feature-desc {
+      font-size: 0.97rem;
+      color: inherit;
+    }
+    .feature-explore {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 9px 24px;
+      font-weight: 600;
+      font-size: 1.02rem;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(101,95,214,0.13);
+      transition: background 0.2s;
+    }
+    .feature-explore:hover {
+      background: var(--accent);
+    }
+    /* Responsive */
+    @media (max-width: 520px) {
+      .container {max-width:100vw;}
+      .features-card, .card, .topbar-card {padding-left:3vw; padding-right:3vw;}
+    }
+    footer {
+      text-align:center; font-size:0.95rem;
+      color:#898ad1; margin:23px 0 10px;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    body.dark footer {
+      color: #ccc;
+    }
+    /* QR Modal styles */
+    #qrModal, #calendarModal, #mapModal {
+      display:none;
+      position: fixed;
+      top:0; left:0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    #qrModal > div, #calendarModal > div, #mapModal > div {
+      background: #fff;
+      border-radius: 20px;
+      width: 90vw;
+      max-width: 400px;
+      height: 80vh;
+      position: relative;
+      overflow: hidden;
+    }
+    #qrModal.dark > div, #calendarModal.dark > div, #mapModal.dark > div {
+      background: #181934;
+      color: #ecebf7;
+    }
+    #qr-reader {
+      width: 100% !important;
+      height: 320px !important;
+    }
+    #qr-result {
+      margin-top: 10px;
+      color: black;
+      font-weight: bold;
+      overflow-wrap: break-word;
+    }
+    #closeQr, #closeCalendarBtn, #closeMapBtn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      cursor: pointer;
+      z-index: 15;
+      font-weight: bold;
+    }
+    #map {
+      width: 100%; height: 100%;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    <!-- ---- Top header ---- -->
+    <div class="topbar-card">
+      <div class="topbar-logo" aria-label="Sikkim Monastery Tourism logo">
+        <span class="logo-icon" style="font-size:1.7rem;vertical-align:middle;">⛩️</span>
+        <span class="logo-text" style="font-weight:700;font-size:1.1rem;vertical-align:middle;line-height:1.2;">
+          Sikkim Monastery<br />Tourism
+        </span>
+      </div>
+      <button id="themeToggle" class="mode-switch-btn" aria-label="Toggle light and dark mode">
+        <span style="font-size:1.15rem;vertical-align:middle;">🌙</span>
+        <span class="switch-text" style="font-weight:500">Dark<br />Mode</span>
+      </button>
+    </div>
+    <!-- ---- Features ---- -->
+    <section class="features-card">
+      <h2><span style="color:#ff4171;">&#x1F6A9;</span> Explore Monastery Features</h2>
+      <div class="feature-list">
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-map"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Interactive Map</span>
+              <span class="feature-desc">Explore monastery locations & routes.</span>
+            </div>
+          </div>
+          <button class="feature-explore" id="mapExploreBtn">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-calendar-alt"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Cultural Calendar</span>
+              <span class="feature-desc">Festivals & rituals schedule.</span>
+            </div>
+          </div>
+          <button class="feature-explore" id="calendarExploreBtn">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-qrcode"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">QR Guide</span>
+              <span class="feature-desc">Scan to learn monastery components.</span>
+            </div>
+          </div>
+          <button class="feature-explore" id="qrExploreBtn">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-cubes"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">3D Models</span>
+              <span class="feature-desc">View monastery architecture in 3D.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-headphones"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Smart Audio Guide</span>
+              <span class="feature-desc">Location-based narration.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+        <div class="feature-row">
+          <div class="feature-info">
+            <span class="feature-icon"><i class="fas fa-globe"></i></span>
+            <div class="feature-details">
+              <span class="feature-title">Virtual Tours</span>
+              <span class="feature-desc">360° panoramic monastery views.</span>
+            </div>
+          </div>
+          <button class="feature-explore">Explore</button>
+        </div>
+      </div>
+    </section>
+    <!-- ---- Digital Archives ---- -->
+    <section class="card">
+      <h2>📜 Digital Archives</h2>
+      <div class="archive-btns">
+        <button>Ancient Manuscripts</button>
+        <button>Murals & Art</button>
+        <button>Historic Documents</button>
+        <button>Prayer Collections</button>
+        <button>Ritual Ceremonies</button>
+        <button>Traditional Music</button>
+      </div>
+    </section>
+    <!-- ---- Tourism Statistics ---- -->
+    <section class="card">
+      <h2>📊 Tourism Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat"><big>200+</big>Active Monasteries</div>
+        <div class="stat"><big>50K+</big>Annual Visitors</div>
+        <div class="stat"><big>120+</big>Cultural Events</div>
+        <div class="stat"><big>15</big>Heritage Sites</div>
+      </div>
+    </section>
+
+    <!-- Enchey Monastery Chatbot -->
+    <section class="card" id="chatbot-section">
+      <h2>💬 Enchey Monastery Chatbot</h2>
+      <input type="text" id="chatbot-input" placeholder="Ask about Enchey Monastery" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;" />
+      <div id="chatbot-output" style="margin-top: 12px; min-height: 60px; font-weight: 600; color: var(--primary);"></div>
+    </section>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div id="qrModal">
+    <div>
+      <button id="closeQr">Close Scanner</button>
+      <div id="qr-reader"></div>
+      <div id="qr-result"></div>
+    </div>
+  </div>
+
+  <!-- Calendar Modal -->
+  <div id="calendarModal">
+    <div>
+      <button id="closeCalendarBtn">Close</button>
+      <iframe src="https://www.lotsawahouse.org/Cgi/phugpa.pl" style="width:100%; height:100%; border:none; border-radius: 20px;"></iframe>
+    </div>
+  </div>
+
+  <!-- Map Modal -->
+  <div id="mapModal">
+    <div>
+      <button id="closeMapBtn">Close</button>
+      <div id="map" style="width:100%; height:100%;"></div>
+    </div>
+  </div>
+
+  <!-- Google Maps API script with your key -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjgybqWqcg8vhilVmRc846aXkgTXyLY8A" async defer></script>
+
+  <script>
+    // Theme toggle
+    const themeBtn = document.getElementById('themeToggle');
+    const body = document.body;
+    if(localStorage.getItem('darkMode') === 'true') {
+      body.classList.add('dark');
+      themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500">Light<br />Mode</span>';
+    }
+    themeBtn.addEventListener('click', () => {
+      if(body.classList.contains('dark')) {
+        body.classList.remove('dark');
+        localStorage.setItem('darkMode', 'false');
+        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">🌙</span><span class="switch-text" style="font-weight:500">Dark<br />Mode</span>';
+      } else {
+        body.classList.add('dark');
+        localStorage.setItem('darkMode', 'true');
+        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500">Light<br />Mode</span>';
+      }
+    });
+
+    // QR scanner setup with larger scan box
+    const qrModal = document.getElementById('qrModal');
+    const qrResult = document.getElementById('qr-result');
+    const closeQrBtn = document.getElementById('closeQr');
+    let html5QrCode;
+
+    document.getElementById('qrExploreBtn').addEventListener('click', () => {
+      qrModal.style.display = 'flex';
+      qrResult.innerHTML = "Scanning for QR code...";
+
+      if (html5QrCode) {
+        html5QrCode.clear().catch(()=>{});
+      }
+      html5QrCode = new Html5Qrcode("qr-reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 400 }, // Increased scanning square size here
+        (decodedText) => {
+          html5QrCode.stop();
+          let display = `QR Code detected:<br>`;
+          if (decodedText.startsWith("http://") || decodedText.startsWith("https://")) {
+            display += `<a href="${decodedText}" target="_blank" style="font-weight:bold;word-break:break-word;">${decodedText}</a>`;
+          } else {
+            display += `<span style="font-weight:bold;word-break:break-word;">${decodedText}</span>`;
+          }
+          qrResult.innerHTML = display;
+        }
+      ).catch((err) => {
+        qrResult.textContent = `Unable to start scanning: ${err}`;
+      });
+    });
+
+    closeQrBtn.addEventListener('click', () => {
+      qrModal.style.display = 'none';
+      qrResult.textContent = '';
+      if (html5QrCode) {
+        html5QrCode.stop().catch(()=>{});
+        html5QrCode.clear().catch(()=>{});
+        html5QrCode = null;
+      }
+    });
+
+    // Calendar modal setup
+    const calendarModal = document.getElementById('calendarModal');
+    const closeCalendarBtn = document.getElementById('closeCalendarBtn');
+    const calendarExploreBtn = document.getElementById('calendarExploreBtn');
+    calendarExploreBtn.addEventListener('click', () => {
+      calendarModal.style.display = 'flex';
+    });
+    closeCalendarBtn.addEventListener('click', () => {
+      calendarModal.style.display = 'none';
+    });
+
+    // Google Maps setup
+    let map;
+    const mapModal = document.getElementById('mapModal');
+    const closeMapBtn = document.getElementById('closeMapBtn');
+    const mapExploreBtn = document.getElementById('mapExploreBtn');
+    mapExploreBtn.addEventListener('click', () => {
+      mapModal.style.display = 'flex';
+      if (!map) {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 27.5337, lng: 88.5122 },
+          zoom: 10,
+        });
+        new google.maps.Marker({
+          position: { lat: 27.3396, lng: 88.6168 },
+          map: map,
+          title: 'Rumtek Monastery'
+        });
+      }
+    });
+    closeMapBtn.addEventListener('click', () => {
+      mapModal.style.display = 'none';
+    });
+
+    // Enchey Monastery Chatbot functionality
+    const qna = {
+      "when was enchey monastery established?": "Enchey Monastery is approximately 200 years old. The present structure was constructed during Sidkeong Tulku's reign between 1909 and 1910.",
+      "where is enchey monastery located?": "It is located on a ridge about 3 km northeast of Gangtok, the capital city of Sikkim, India.",
+      "to which buddhist order does it belong?": "Enchey Monastery belongs to the Nyingma order of Vajrayana Buddhism.",
+      "what does enchey monastery mean?": "The name 'Enchey' literally means 'the solitary temple' or 'the solitary monastery'.",
+      "who founded enchey monastery?": "Lama Drupthob Karpo, a tantric adept known for flying powers, initially blessed the site and is believed to have built a hermitage there after flying from Maenam Hill in South Sikkim.",
+      "how many monks reside in enchey monastery?": "The monastery currently houses around 90 monks.",
+      "which deities are worshipped in enchey monastery?": "The principal deities worshipped are Buddha, Loketeswara (Avalokiteshvara), and Guru Padmasambhava.",
+      "what are the major festivals celebrated at enchey monastery?": "Major festivals include the Chaam dance festival held in January or February, special prayers on the 18th and 19th day of the 12th lunar month, and Pang Lhabsol, celebrating the bond between the Bhutia and Lepcha communities.",
+      "can tourists visit enchey monastery?": "Yes, tourists are welcome to visit free of charge from about 9 AM to 5 PM daily.",
+      "is photography allowed in the monastery?": "Photography is generally allowed in the monastery courtyard but usually restricted inside the prayer halls.",
+      "what should visitors keep in mind when visiting?": "Visitors should maintain silence, remove shoes before entering, dress modestly, avoid touching religious objects, and seek permission before taking photographs.",
+      "how to reach enchey monastery?": "The monastery is about 3 km from Gangtok's town center and can be reached by taxi or by a 40-minute uphill hike.",
+      "what is special about enchey monastery's architecture?": "It features pagoda-style architecture influenced by Chinese styles from Mt. Wutaishan, ornate wood carvings, murals, and a golden cupola.",
+      "what cultural experiences does the monastery offer?": "Visitors can witness Buddhist rituals, interact with monks, observe traditional Cham dances during festivals, and enjoy panoramic views of Gangtok and Kangchenjunga mountain.",
+      "what role does enchey monastery play in local community?": "Enchey Monastery is a spiritual center for local Buddhists and hosts religious festivals, community prayers, and cultural education.",
+      "who was sidkeong tulku?": "Sidkeong Tulku Namgyal was the king of Sikkim who patronized the building of the current monastery structure in the early 20th century.",
+      "what is the significance of the chaam dance?": "The Chaam dance is a sacred masked ritual performed to drive away evil spirits and bring blessings to the community.",
+      "are there any ancient artifacts in the monastery?": "Yes, the monastery houses images of gods, goddesses, ancient scriptures, ritual objects, and murals.",
+      "is enchey monastery open all year?": "The monastery is open year-round but best visited during festivals (January/February) for cultural events."
+    };
+
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotOutput = document.getElementById('chatbot-output');
+
+    chatbotInput.addEventListener('keypress', function(event) {
+      if(event.key === 'Enter') {
+        const question = chatbotInput.value.trim().toLowerCase();
+        if(question) {
+          if(qna[question]){
+            chatbotOutput.textContent = qna[question];
+          } else {
+            chatbotOutput.textContent = "Sorry, I do not have an answer for that. Please try another question.";
+          }
+        }
+        chatbotInput.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
