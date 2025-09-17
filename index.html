@@ -269,12 +269,13 @@
     }
     #qr-reader {
       width: 100% !important;
-      height: 320px !important; /* Added fixed height */
+      height: 320px !important;
     }
     #qr-result {
       margin-top: 10px;
       color: black;
       font-weight: bold;
+      overflow-wrap: break-word;
     }
     #closeQr, #closeCalendarBtn, #closeMapBtn {
       position: absolute;
@@ -306,7 +307,7 @@
       </div>
       <button id="themeToggle" class="mode-switch-btn" aria-label="Toggle light and dark mode">
         <span style="font-size:1.15rem;vertical-align:middle;">🌙</span>
-        <span class="switch-text" style="font-weight:500;">Dark<br />Mode</span>
+        <span class="switch-text" style="font-weight:500">Dark<br />Mode</span>
       </button>
     </div>
     <!-- ---- Features ---- -->
@@ -397,10 +398,15 @@
         <div class="stat"><big>15</big>Heritage Sites</div>
       </div>
     </section>
-    <footer>
-      © 2025 Sikkim Monastery Tourism · Enhanced UI Prototype
-    </footer>
+
+    <!-- Enchey Monastery Chatbot -->
+    <section class="card" id="chatbot-section">
+      <h2>💬 Enchey Monastery Chatbot</h2>
+      <input type="text" id="chatbot-input" placeholder="Ask about Enchey Monastery" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;" />
+      <div id="chatbot-output" style="margin-top: 12px; min-height: 60px; font-weight: 600; color: var(--primary);"></div>
+    </section>
   </div>
+
   <!-- QR Scanner Modal -->
   <div id="qrModal">
     <div>
@@ -409,6 +415,7 @@
       <div id="qr-result"></div>
     </div>
   </div>
+
   <!-- Calendar Modal -->
   <div id="calendarModal">
     <div>
@@ -416,6 +423,7 @@
       <iframe src="https://www.lotsawahouse.org/Cgi/phugpa.pl" style="width:100%; height:100%; border:none; border-radius: 20px;"></iframe>
     </div>
   </div>
+
   <!-- Map Modal -->
   <div id="mapModal">
     <div>
@@ -433,60 +441,59 @@
     const body = document.body;
     if(localStorage.getItem('darkMode') === 'true') {
       body.classList.add('dark');
-      themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500;">Light<br />Mode</span>';
+      themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500">Light<br />Mode</span>';
     }
     themeBtn.addEventListener('click', () => {
       if(body.classList.contains('dark')) {
         body.classList.remove('dark');
         localStorage.setItem('darkMode', 'false');
-        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">🌙</span><span class="switch-text" style="font-weight:500;">Dark<br />Mode</span>';
+        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">🌙</span><span class="switch-text" style="font-weight:500">Dark<br />Mode</span>';
       } else {
         body.classList.add('dark');
         localStorage.setItem('darkMode', 'true');
-        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500;">Light<br />Mode</span>';
+        themeBtn.innerHTML = '<span style="font-size:1.15rem;vertical-align:middle;">☀️</span><span class="switch-text" style="font-weight:500">Light<br />Mode</span>';
       }
     });
 
-    // QR scanner setup
+    // QR scanner setup with larger scan box
     const qrModal = document.getElementById('qrModal');
     const qrResult = document.getElementById('qr-result');
     const closeQrBtn = document.getElementById('closeQr');
     let html5QrCode;
+
     document.getElementById('qrExploreBtn').addEventListener('click', () => {
       qrModal.style.display = 'flex';
-      qrResult.innerText = "Scanning for QR code...";
+      qrResult.innerHTML = "Scanning for QR code...";
+
       if (html5QrCode) {
-        html5QrCode.clear().catch(e => console.error(e));
+        html5QrCode.clear().catch(()=>{});
       }
       html5QrCode = new Html5Qrcode("qr-reader");
       html5QrCode.start(
         { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: 250
-        },
-        (decodedText, decodedResult) => {
-          qrResult.textContent = `QR Code detected: ${decodedText}`;
+        { fps: 10, qrbox: 400 }, // Increased scanning square size here
+        (decodedText) => {
           html5QrCode.stop();
-          try {
-            const url = new URL(decodedText);
-            window.open(url.href, '_blank');
-          } catch {
-            // not a URL
+          let display = `QR Code detected:<br>`;
+          if (decodedText.startsWith("http://") || decodedText.startsWith("https://")) {
+            display += `<a href="${decodedText}" target="_blank" style="font-weight:bold;word-break:break-word;">${decodedText}</a>`;
+          } else {
+            display += `<span style="font-weight:bold;word-break:break-word;">${decodedText}</span>`;
           }
-        },
-        (errorMessage) => {
-          // No action needed on scan failure to allow continuous scanning
-        })
-        .catch((err) => {
-          qrResult.textContent = `Unable to start scanning: ${err}`;
-        });
+          qrResult.innerHTML = display;
+        }
+      ).catch((err) => {
+        qrResult.textContent = `Unable to start scanning: ${err}`;
+      });
     });
+
     closeQrBtn.addEventListener('click', () => {
       qrModal.style.display = 'none';
       qrResult.textContent = '';
       if (html5QrCode) {
-        html5QrCode.stop();
+        html5QrCode.stop().catch(()=>{});
+        html5QrCode.clear().catch(()=>{});
+        html5QrCode = null;
       }
     });
 
@@ -513,7 +520,6 @@
           center: { lat: 27.5337, lng: 88.5122 },
           zoom: 10,
         });
-        // Marker for Rumtek Monastery
         new google.maps.Marker({
           position: { lat: 27.3396, lng: 88.6168 },
           map: map,
@@ -521,9 +527,48 @@
         });
       }
     });
-
     closeMapBtn.addEventListener('click', () => {
       mapModal.style.display = 'none';
+    });
+
+    // Enchey Monastery Chatbot functionality
+    const qna = {
+      "when was enchey monastery established?": "Enchey Monastery is approximately 200 years old. The present structure was constructed during Sidkeong Tulku's reign between 1909 and 1910.",
+      "where is enchey monastery located?": "It is located on a ridge about 3 km northeast of Gangtok, the capital city of Sikkim, India.",
+      "to which buddhist order does it belong?": "Enchey Monastery belongs to the Nyingma order of Vajrayana Buddhism.",
+      "what does enchey monastery mean?": "The name 'Enchey' literally means 'the solitary temple' or 'the solitary monastery'.",
+      "who founded enchey monastery?": "Lama Drupthob Karpo, a tantric adept known for flying powers, initially blessed the site and is believed to have built a hermitage there after flying from Maenam Hill in South Sikkim.",
+      "how many monks reside in enchey monastery?": "The monastery currently houses around 90 monks.",
+      "which deities are worshipped in enchey monastery?": "The principal deities worshipped are Buddha, Loketeswara (Avalokiteshvara), and Guru Padmasambhava.",
+      "what are the major festivals celebrated at enchey monastery?": "Major festivals include the Chaam dance festival held in January or February, special prayers on the 18th and 19th day of the 12th lunar month, and Pang Lhabsol, celebrating the bond between the Bhutia and Lepcha communities.",
+      "can tourists visit enchey monastery?": "Yes, tourists are welcome to visit free of charge from about 9 AM to 5 PM daily.",
+      "is photography allowed in the monastery?": "Photography is generally allowed in the monastery courtyard but usually restricted inside the prayer halls.",
+      "what should visitors keep in mind when visiting?": "Visitors should maintain silence, remove shoes before entering, dress modestly, avoid touching religious objects, and seek permission before taking photographs.",
+      "how to reach enchey monastery?": "The monastery is about 3 km from Gangtok's town center and can be reached by taxi or by a 40-minute uphill hike.",
+      "what is special about enchey monastery's architecture?": "It features pagoda-style architecture influenced by Chinese styles from Mt. Wutaishan, ornate wood carvings, murals, and a golden cupola.",
+      "what cultural experiences does the monastery offer?": "Visitors can witness Buddhist rituals, interact with monks, observe traditional Cham dances during festivals, and enjoy panoramic views of Gangtok and Kangchenjunga mountain.",
+      "what role does enchey monastery play in local community?": "Enchey Monastery is a spiritual center for local Buddhists and hosts religious festivals, community prayers, and cultural education.",
+      "who was sidkeong tulku?": "Sidkeong Tulku Namgyal was the king of Sikkim who patronized the building of the current monastery structure in the early 20th century.",
+      "what is the significance of the chaam dance?": "The Chaam dance is a sacred masked ritual performed to drive away evil spirits and bring blessings to the community.",
+      "are there any ancient artifacts in the monastery?": "Yes, the monastery houses images of gods, goddesses, ancient scriptures, ritual objects, and murals.",
+      "is enchey monastery open all year?": "The monastery is open year-round but best visited during festivals (January/February) for cultural events."
+    };
+
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotOutput = document.getElementById('chatbot-output');
+
+    chatbotInput.addEventListener('keypress', function(event) {
+      if(event.key === 'Enter') {
+        const question = chatbotInput.value.trim().toLowerCase();
+        if(question) {
+          if(qna[question]){
+            chatbotOutput.textContent = qna[question];
+          } else {
+            chatbotOutput.textContent = "Sorry, I do not have an answer for that. Please try another question.";
+          }
+        }
+        chatbotInput.value = '';
+      }
     });
   </script>
 </body>
